@@ -20,7 +20,7 @@
     "cli",
     "markdown"
   ],
-  "author": "",
+  "author": "Aiden Ahn",
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",
@@ -35,10 +35,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/rules-converter.git"
+    "url": "https://github.com/seungwonme/rules-converter.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/rules-converter/issues"
+    "url": "https://github.com/seungwonme/rules-converter/issues"
   },
-  "homepage": "https://github.com/yourusername/rules-converter#readme"
+  "homepage": "https://github.com/seungwonme/rules-converter#readme"
 }
