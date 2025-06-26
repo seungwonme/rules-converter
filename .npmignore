@@ -1,0 +1,10 @@
+test/
+.cursor/
+*.log
+.DS_Store
+.env
+.gitignore
+.npmignore
+CLAUDE.md
+GEMINI.md
+PROMPT.md

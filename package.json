@@ -1,0 +1,44 @@
+{
+  "name": "rules-converter",
+  "version": "1.0.0",
+  "description": "Convert cursor rules to CLAUDE.md or GEMINI.md format",
+  "main": "src/index.js",
+  "bin": {
+    "rules-converter": "./bin/rules-converter.js"
+  },
+  "scripts": {
+    "test": "node test/test.js",
+    "lint": "eslint src bin",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "cursor",
+    "rules",
+    "converter",
+    "claude",
+    "gemini",
+    "cli",
+    "markdown"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/rules-converter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/rules-converter/issues"
+  },
+  "homepage": "https://github.com/yourusername/rules-converter#readme"
+}
