@@ -10,13 +10,13 @@ const { RuleType, extractExtensionsFromGlobs } = require('./parser');
 function generateAlwaysRulesContent(rules) {
   if (rules.length === 0) return '';
 
-  return rules
-    .map(
-      (rule) =>
-        `The following rules should be considered foundational. Make sure you're familiar with them before working on this project:
-\n@.cursor/rules/${rule.fileName}`,
-    )
-    .join('\n\n');
+  const rulesList = rules
+    .map((rule) => `@.cursor/rules/${rule.fileName}`)
+    .join('\n');
+
+  return `The following rules should be considered foundational. Make sure you're familiar with them before working on this project:
+
+${rulesList}`;
 }
 
 /**
@@ -43,13 +43,37 @@ function generateAgentRequestedRulesContent(rules) {
 function generateAutoAttachedRulesContent(rules) {
   if (rules.length === 0) return '';
 
-  return rules
-    .map((rule) => {
-      const extensions = extractExtensionsFromGlobs(rule.frontmatter.globs);
+  // Group rules by their extension patterns
+  const extensionGroups = new Map();
+
+  rules.forEach((rule) => {
+    const extensions = extractExtensionsFromGlobs(rule.frontmatter.globs);
+    const extensionKey = extensions.sort().join(','); // Create a consistent key
+
+    if (!extensionGroups.has(extensionKey)) {
+      extensionGroups.set(extensionKey, {
+        extensions,
+        rules: [],
+      });
+    }
+
+    extensionGroups.get(extensionKey).rules.push(rule);
+  });
+
+  // Generate content for each extension group
+  const groupContents = Array.from(extensionGroups.values()).map(
+    ({ extensions, rules }) => {
       const extensionList = extensions.map((ext) => `.${ext}`).join(', ');
-      return `When working with files that match the following extensions (${extensionList}), review and apply the relevant rules:\n@.cursor/rules/${rule.fileName}`;
-    })
-    .join('\n\n');
+      const rulesList = rules
+        .map((rule) => `@.cursor/rules/${rule.fileName}`)
+        .join('\n');
+
+      return `When working with files that match the following extensions (${extensionList}), review and apply the relevant rules:
+${rulesList}`;
+    },
+  );
+
+  return groupContents.join('\n\n');
 }
 
 /**

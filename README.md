@@ -33,16 +33,34 @@ This tool reads cursor rule files from `.cursor/rules` directory and converts th
 ### Rule Types
 
 1. **Always Rules** (`alwaysApply: true`)
+
    - These rules are attached to every chat and command+k request
-   - Output format: `프로젝트에서 반드시 아래 파일의 내용을 참고하세요: @.cursor/rules/<filename>`
+   - **✨ New in v1.1.0**: Multiple Always rules are grouped under one prompt to reduce redundancy
+   - Output format:
+
+     ```
+     The following rules should be considered foundational. Make sure you're familiar with them before working on this project:
+
+     @.cursor/rules/<filename1>
+     @.cursor/rules/<filename2>
+     @.cursor/rules/<filename3>
+     ```
 
 2. **Agent Requested Rules** (`alwaysApply: false` with `description`)
+
    - Rules that agents use when the description matches the current context
    - Output format: `<description>: @.cursor/rules/<filename>`
 
 3. **Auto Attached Rules** (with `globs` field)
+
    - Automatically applied when editing files matching the glob pattern
-   - Output format: `<extensions> 해당 확장자 파일을 수정할 때 아래의 룰을 적용하세요: @.cursor/rules/<filename>`
+   - **✨ New in v1.1.0**: Rules with identical file extensions are grouped together to reduce redundancy
+   - Output format:
+     ```
+     When working with files that match the following extensions (.js, .jsx, .ts, .tsx), review and apply the relevant rules:
+     @.cursor/rules/<filename1>
+     @.cursor/rules/<filename2>
+     ```
 
 4. **Manual Rules** (others)
    - Rules that need to be manually referenced
@@ -79,13 +97,14 @@ Running `npx rules-converter claude` will create:
 ```markdown
 <!-- CLAUDE.md -->
 
-프로젝트에서 반드시 아래 파일의 내용을 참고하세요:
+The following rules should be considered foundational. Make sure you're familiar with them before working on this project:
+
 @.cursor/rules/always-rule.md
 
 Git convention defining branch naming, commit message format:
 @.cursor/rules/git-convention.md
 
-.ts, .tsx 해당 확장자 파일을 수정할 때 아래의 룰을 적용하세요:
+When working with files that match the following extensions (.ts, .tsx), review and apply the relevant rules:
 @.cursor/rules/typescript-rules.md
 ```
 
@@ -95,6 +114,80 @@ Git convention defining branch naming, commit message format:
 - `-o, --output <path>`: Output file path (default: `CLAUDE.md` or `GEMINI.md`)
 - `-h, --help`: Display help
 - `-V, --version`: Display version
+
+## Advanced Usage
+
+### Multiple File Extensions
+
+If you have rules that apply to different file extensions, they will be grouped appropriately:
+
+```markdown
+---
+description: Frontend coding standards
+globs: **/*.js,**/*.jsx,**/*.ts,**/*.tsx
+alwaysApply: false
+---
+```
+
+```markdown
+---
+description: Python coding standards
+globs: **/*.py,**/*.pyi
+alwaysApply: false
+---
+```
+
+Output:
+
+```
+When working with files that match the following extensions (.js, .jsx, .ts, .tsx), review and apply the relevant rules:
+@.cursor/rules/frontend-standards.md
+
+When working with files that match the following extensions (.py, .pyi), review and apply the relevant rules:
+@.cursor/rules/python-standards.md
+```
+
+### Custom Directory Structure
+
+You can organize your rules in subdirectories:
+
+```
+.cursor/rules/
+├── languages/
+│   ├── typescript.md
+│   └── python.md
+├── frameworks/
+│   ├── nextjs.md
+│   └── django.md
+└── general/
+    └── git-convention.md
+```
+
+All `.md` and `.mdc` files will be processed recursively.
+
+## Changelog
+
+### v1.1.0
+
+- ✨ **New**: Always rules are now grouped under one prompt to reduce redundancy
+- ✨ **New**: Auto Attached rules with identical file extensions are grouped together
+- 🔧 **Improved**: More concise output format with less repetitive text
+- 📝 **Updated**: Enhanced documentation with examples
+
+### v1.0.0
+
+- 🎉 Initial release
+- ✅ Support for Always, Agent Requested, Auto Attached, and Manual rules
+- ✅ CLI interface with customizable options
+- ✅ Support for both CLAUDE and GEMINI formats
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
