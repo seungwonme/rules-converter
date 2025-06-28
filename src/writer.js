@@ -15,7 +15,6 @@ function generateAlwaysRulesContent(rules) {
     .join('\n');
 
   return `The following rules should be considered foundational. Make sure you're familiar with them before working on this project:
-
 ${rulesList}`;
 }
 
@@ -112,11 +111,22 @@ async function writeRulesToFile(categorizedRules, outputPath, target) {
   // Combine all sections
   const content = sections.join('\n\n');
 
+  // Wrap content in <rules> tags
+  const wrappedContent = `<rules>\n${content}\n</rules>`;
+
   // Ensure the output directory exists
   await fs.ensureDir(path.dirname(outputPath));
 
-  // Write to file
-  await fs.writeFile(outputPath, content, 'utf8');
+  // Check if file exists
+  const fileExists = await fs.pathExists(outputPath);
+
+  if (fileExists) {
+    // Append to existing file with newlines for separation
+    await fs.appendFile(outputPath, `\n\n${wrappedContent}`, 'utf8');
+  } else {
+    // Create new file
+    await fs.writeFile(outputPath, wrappedContent, 'utf8');
+  }
 
   // Return statistics
   return {
@@ -128,6 +138,7 @@ async function writeRulesToFile(categorizedRules, outputPath, target) {
       (sum, rules) => sum + rules.length,
       0,
     ),
+    fileAction: fileExists ? 'appended' : 'created',
   };
 }
 

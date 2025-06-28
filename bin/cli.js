@@ -34,13 +34,16 @@ program
       console.log(chalk.gray(`Rules directory: ${options.rulesDir}`));
       console.log(chalk.gray(`Output file: ${outputPath}`));
 
-      await convertRules({
+      const stats = await convertRules({
         target: target.toLowerCase(),
         rulesDir: options.rulesDir,
         outputPath: outputPath,
       });
 
-      console.log(chalk.green(`✅ Successfully created ${outputPath}`));
+      const actionMessage = stats.fileAction === 'appended' 
+        ? `✅ Successfully appended to ${outputPath}` 
+        : `✅ Successfully created ${outputPath}`;
+      console.log(chalk.green(actionMessage));
     } catch (error) {
       console.error(chalk.red(`Error: ${error.message}`));
       process.exit(1);

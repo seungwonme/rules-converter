@@ -1,10 +1,11 @@
 {
   "name": "rules-converter",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Convert cursor rules to CLAUDE.md or GEMINI.md format",
   "main": "src/index.js",
   "bin": {
-    "rules-converter": "./bin/rules-converter.js"
+    "rules-converter": "./bin/cli.js",
+    "rc": "./bin/cli.js"
   },
   "scripts": {
     "test": "node test/test.js",

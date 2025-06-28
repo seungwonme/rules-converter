@@ -1,4 +1,3 @@
-const path = require('path');
 const { parseRules } = require('./parser');
 const { writeRulesToFile } = require('./writer');
 const chalk = require('chalk');
@@ -34,7 +33,7 @@ async function convertRules(options) {
     console.log(chalk.gray(`  Manual rules (excluded): ${stats.manualCount}`));
     console.log(chalk.gray(`  Total processed: ${stats.totalProcessed}`));
 
-    return stats;
+    return { ...stats, fileAction: stats.fileAction };
   } catch (error) {
     throw error;
   }
