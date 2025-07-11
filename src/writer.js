@@ -11,7 +11,7 @@ function generateAlwaysRulesContent(rules) {
   if (rules.length === 0) return '';
 
   const rulesList = rules
-    .map((rule) => `@.cursor/rules/${rule.fileName}`)
+    .map((rule) => `@.cursor/rules/${rule.relativePath || rule.fileName}`)
     .join('\n');
 
   return `The following rules should be considered foundational. Make sure you're familiar with them before working on this project:
@@ -29,7 +29,7 @@ function generateAgentRequestedRulesContent(rules) {
   return rules
     .map(
       (rule) =>
-        `${rule.frontmatter.description}:\n@.cursor/rules/${rule.fileName}`,
+        `${rule.frontmatter.description}:\n@.cursor/rules/${rule.relativePath || rule.fileName}`,
     )
     .join('\n\n');
 }
@@ -64,7 +64,7 @@ function generateAutoAttachedRulesContent(rules) {
     ({ extensions, rules }) => {
       const extensionList = extensions.map((ext) => `.${ext}`).join(', ');
       const rulesList = rules
-        .map((rule) => `@.cursor/rules/${rule.fileName}`)
+        .map((rule) => `@.cursor/rules/${rule.relativePath || rule.fileName}`)
         .join('\n');
 
       return `When working with files that match the following extensions (${extensionList}), review and apply the relevant rules:

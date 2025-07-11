@@ -94,6 +94,37 @@ function determineRuleType(frontmatter) {
 }
 
 /**
+ * Recursively find all .mdc files in a directory
+ * @param {string} dir - Directory to search
+ * @param {string} baseDir - Base directory for relative paths
+ * @returns {Array} Array of file paths with relative paths
+ */
+async function findRuleFiles(dir, baseDir = dir) {
+  const files = await fs.readdir(dir);
+  const ruleFiles = [];
+
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    const stat = await fs.stat(filePath);
+
+    if (stat.isDirectory()) {
+      // Recursively search subdirectories
+      const subFiles = await findRuleFiles(filePath, baseDir);
+      ruleFiles.push(...subFiles);
+    } else if (file.endsWith('.mdc')) {
+      // Calculate relative path from base directory
+      const relativePath = path.relative(baseDir, filePath);
+      ruleFiles.push({
+        fullPath: filePath,
+        relativePath: relativePath,
+      });
+    }
+  }
+
+  return ruleFiles;
+}
+
+/**
  * Parse all rules in a directory
  * @param {string} rulesDir - Path to the rules directory
  * @returns {Object} Categorized rules
@@ -105,9 +136,8 @@ async function parseRules(rulesDir) {
     throw new Error(`Rules directory not found: ${rulesDir}`);
   }
 
-  // Read all files in the directory
-  const files = await fs.readdir(rulesDir);
-  const ruleFiles = files.filter((file) => file.endsWith('.mdc'));
+  // Find all rule files recursively
+  const ruleFiles = await findRuleFiles(rulesDir);
 
   if (ruleFiles.length === 0) {
     throw new Error(`No rule files found in directory: ${rulesDir}`);
@@ -115,7 +145,12 @@ async function parseRules(rulesDir) {
 
   // Parse all rule files
   const parsedRules = await Promise.all(
-    ruleFiles.map((file) => parseRuleFile(path.join(rulesDir, file))),
+    ruleFiles.map(async ({ fullPath, relativePath }) => {
+      const rule = await parseRuleFile(fullPath);
+      // Add relative path to the rule object
+      rule.relativePath = relativePath;
+      return rule;
+    }),
   );
 
   // Categorize rules by type
